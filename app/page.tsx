@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { CameraCapture } from '@/components/CameraCapture';
+import { TerrainBackground } from '@/components/TerrainBackground';
 
 export default function Home() {
   const { location, error: locationError, loading, getLocation } = useGeolocation();
@@ -32,7 +33,9 @@ export default function Home() {
   };
 
   return (
-    <div className="container">
+    <>
+      <TerrainBackground />
+      <div className="container">
       <h1>📍 位置拍照应用</h1>
 
       {/* 定位信息区域 */}
@@ -124,7 +127,8 @@ export default function Home() {
           SDK 状态: {sdkReady ? '✅ 已就绪' : '⏳ 初始化中...'}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 
