@@ -14,9 +14,8 @@ export default function Home() {
     const initSDK = async () => {
       try {
         // 动态导入 SDK，避免 SSR 问题
-        const { MiniAppSDK } = await import('@farcaster/miniapp-sdk');
-        const sdk = new MiniAppSDK();
-        await sdk.ready();
+        const sdk = (await import('@farcaster/miniapp-sdk')).default;
+        await sdk.actions.ready();
         setSdkReady(true);
       } catch (err) {
         // SDK 初始化失败不影响应用运行（开发环境可能没有 SDK）
