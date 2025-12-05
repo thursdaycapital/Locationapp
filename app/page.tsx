@@ -49,9 +49,70 @@ export default function Home() {
           {loading ? '获取中...' : '获取定位'}
         </button>
 
-        {locationError && (
-          <div className="error-message">{locationError}</div>
-        )}
+        {locationError && (() => {
+          let errorObj: { message: string; type?: string } | null = null;
+          try {
+            errorObj = JSON.parse(locationError);
+          } catch {
+            errorObj = { message: locationError };
+          }
+          
+          const isPermissionError = errorObj?.type === 'permission';
+          
+          return (
+            <div className="error-message">
+              {errorObj?.message || locationError}
+              {isPermissionError && (
+                <div style={{ marginTop: '12px', fontSize: '13px', lineHeight: '1.6' }}>
+                  <strong style={{ display: 'block', marginBottom: '8px' }}>
+                    📍 如何允许位置权限：
+                  </strong>
+                  <div style={{ background: 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: '6px' }}>
+                    <strong>iOS Safari：</strong>
+                    <ol style={{ margin: '6px 0', paddingLeft: '20px' }}>
+                      <li>打开 iPhone 设置</li>
+                      <li>找到并点击 "Safari"</li>
+                      <li>向下滚动找到 "位置服务"</li>
+                      <li>选择 "询问" 或 "允许"</li>
+                      <li>返回浏览器，刷新页面后重试</li>
+                    </ol>
+                    
+                    <strong style={{ display: 'block', marginTop: '12px' }}>Android Chrome：</strong>
+                    <ol style={{ margin: '6px 0', paddingLeft: '20px' }}>
+                      <li>点击浏览器地址栏左侧的锁图标 🔒 或信息图标 ℹ️</li>
+                      <li>找到 "位置" 或 "位置信息" 权限</li>
+                      <li>选择 "允许" 或 "始终允许"</li>
+                      <li>刷新页面后重试</li>
+                    </ol>
+                    
+                    <strong style={{ display: 'block', marginTop: '12px' }}>桌面浏览器：</strong>
+                    <ol style={{ margin: '6px 0', paddingLeft: '20px' }}>
+                      <li>点击地址栏左侧的锁图标 🔒</li>
+                      <li>找到 "位置" 权限设置</li>
+                      <li>选择 "允许"</li>
+                      <li>刷新页面后重试</li>
+                    </ol>
+                  </div>
+                  <div style={{ marginTop: '12px', padding: '8px', background: 'rgba(255,193,7,0.2)', borderRadius: '4px', fontSize: '12px' }}>
+                    💡 <strong>提示：</strong>如果通过 IP 地址访问（如 http://192.168.x.x），某些浏览器可能不允许位置权限。
+                    建议部署到 Vercel 使用 HTTPS 访问以获得最佳体验。
+                  </div>
+                </div>
+              )}
+              {errorObj?.type === 'timeout' && (
+                <div style={{ marginTop: '8px', fontSize: '13px' }}>
+                  <button
+                    onClick={getLocation}
+                    className="button primary-button"
+                    style={{ marginTop: '8px', fontSize: '14px', padding: '8px 16px' }}
+                  >
+                    重试获取位置
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {loading && <div className="loading">正在获取位置信息...</div>}
 

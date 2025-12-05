@@ -42,18 +42,26 @@ export function useGeolocation(): UseGeolocationReturn {
       },
       (err) => {
         let errorMessage = '获取位置失败';
+        let errorType: 'permission' | 'unavailable' | 'timeout' | 'other' = 'other';
+        
         switch (err.code) {
           case err.PERMISSION_DENIED:
-            errorMessage = '用户拒绝了地理定位请求';
+            errorMessage = '位置权限被拒绝';
+            errorType = 'permission';
             break;
           case err.POSITION_UNAVAILABLE:
             errorMessage = '位置信息不可用';
+            errorType = 'unavailable';
             break;
           case err.TIMEOUT:
-            errorMessage = '获取位置超时';
+            errorMessage = '获取位置超时，请重试';
+            errorType = 'timeout';
             break;
+          default:
+            errorMessage = `获取位置失败: ${err.message || '未知错误'}`;
         }
-        setError(errorMessage);
+        
+        setError(JSON.stringify({ message: errorMessage, type: errorType }));
         setLoading(false);
       },
       {
